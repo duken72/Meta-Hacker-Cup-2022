@@ -1,11 +1,15 @@
 #include <iostream>
-#include <algorithm>
 #include <fstream>
 #include <vector>
 #include <sstream>
 
-using std::cout;
-using std::endl;
+// It would be impossible for the trees to have 2 friends,
+// if the width or height of the painting is 1, unless there
+// is no tree.
+// 
+// Otherwise, it is always possible, simply add trees to all
+// positions would work. But a less overkill approach would
+// be create 2x2 blocks of trees
 
 class Scene
 {
@@ -101,15 +105,13 @@ int main()
   // C: number of column
   int T, R, C;
 
-  // if (myfileI.is_open()) {
   if (myfileI.is_open() && myfileO.is_open()) {
     std::string line;
     std::getline (myfileI,line);
     T = stoi(line);
     
     // Loop over each test case
-    for (size_t t = 0; t < T; t++)
-    {
+    for (size_t t = 0; t < T; t++) {
       std::getline (myfileI,line);
       std::vector<int> vectIn = stringToVector(line);
       R = vectIn[0];
@@ -117,11 +119,9 @@ int main()
       Scene scene(R, C);
       
       // Read scene
-      for (size_t r = 0; r < R; r++)
-      {
+      for (size_t r = 0; r < R; r++) {
         std::getline (myfileI,line);
-        for (size_t c = 0; c < C; c++)
-        {
+        for (size_t c = 0; c < C; c++) {
           if (line[c] == '^') {
             scene.scene_[r][c] = true;
           } else {

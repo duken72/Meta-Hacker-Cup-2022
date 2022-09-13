@@ -1,11 +1,8 @@
 #include <iostream>
-#include <algorithm>
-#include <fstream>
 #include <vector>
+#include <fstream>
 #include <sstream>
 
-using std::cout;
-using std::endl;
 enum BLOCKTYPE {EMPTY, TREE, ROCK};
 
 class Scene
@@ -139,7 +136,6 @@ int main()
   // C: number of column
   int T, R, C;
 
-  // if (myfileI.is_open()) {
   if (myfileI.is_open() && myfileO.is_open()) {
     std::string line;
     std::getline (myfileI,line);

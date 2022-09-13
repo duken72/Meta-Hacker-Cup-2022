@@ -1,8 +1,8 @@
 #include <iostream>
-#include <algorithm>
 #include <fstream>
-#include <vector>
 #include <sstream>
+#include <vector>
+#include <algorithm>
 
 std::vector<int> stringToVector(std::string str)
 {
@@ -18,10 +18,10 @@ int main()
 {
   std::ifstream myfileI ("second_hands_input.txt");
   std::ofstream myfileO ("output.txt", std::ios::trunc);
-  int T, N, K;
   // T: number of cases
   // N: number of parts
   // K: the capacity of each display cases
+  int T, N, K;
 
   if (myfileI.is_open() && myfileO.is_open()) {
     std::string line;
@@ -44,6 +44,9 @@ int main()
       }
       int maxCount = *std::max_element(vectCount.begin(), vectCount.end());
       
+      // It would be impossible to setup the display cases:
+      // 1. If the number of part N is greater than the capacity of two case 2K
+      // 2. If there is more than 2 items of the same style
       if (N > 2*K or maxCount > 2) {
         myfileO << "Case #" << i+1 << ": NO\n";
       } else {
