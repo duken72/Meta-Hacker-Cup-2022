@@ -1,27 +1,36 @@
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include <sstream>
+#include <string>
 
+using std::cout, std::cin, std::endl, std::ostream;
+using std::vector, std::string;
+
+const int DEBUG_LEVEL = 0;
+
+// Supporting function for: printing and logging
+template <typename T>
+ostream & operator << (ostream& os, const vector<T>& vec)
+{
+  cout << "Vector: ";
+  for(auto elem : vec)
+    os << elem << " ";
+  return os;
+}
+template <class... Args>
+void LOGIF(const int& level, Args... args)
+{
+  if (level > DEBUG_LEVEL) return;
+  (cout << ... << args) << "\n";
+}
 
 int main()
 {
-  std::ifstream myfileI ("second_flight_sample_input.txt");
-  std::ofstream myfileO ("output.txt", std::ios::trunc);
-  // T: number of test cases
-  int T;
+  std::ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
-  if (myfileI.is_open() && myfileO.is_open()) {
-    std::string line;
-    std::getline (myfileI,line);
-    T = stoi(line);
-    
-    // Loop over each test case
-    for (size_t t = 0; t < T; t++) {
-      myfileO << "Case #" << t+1 << ":";
-    }
-    myfileI.close();
-    myfileO.close();
-  } else std::cout << "Unable to open file for reading";
+  int T; cin >> T;    // No. test case T: 1 ≤ T ≤ ??
+  for (size_t t = 1; t <= T; t++) {
+    cout << "Case #" << t << ": " << endl;
+  }
   return 0;
 }
