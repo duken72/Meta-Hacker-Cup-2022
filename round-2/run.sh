@@ -1,16 +1,13 @@
 #!/bin/bash
 
 clear
-# g++ A1.cpp -o out && ./out < a1_input.txt
-# g++ A2.cpp -o out && ./out < a2_sample_input.txt
-# g++ A2.cpp -o out && ./out < a2_input.txt > output.txt
-# g++ B1.cpp -o out && ./out < b1_sample_input.txt
-# g++ B2.cpp -o out && ./out < b2_sample_input.txt
-# g++ C.cpp -o out && ./out < c_input.txt
-# g++ D1.cpp -o out && ./out < d1_input.txt
-# g++ D2.cpp -o out && ./out < 1.txt
-g++ D2.cpp -o out && ./out < d2_sample_input.txt #> output.txt
+# g++ a1.cpp -o out && ./out < a1.txt > output.txt
+# g++ a2.cpp -o out && ./out < a22.txt
+# g++ a2.cpp -o out && ./out < a2.txt
+# g++ b.cpp -o out && ./out < b.txt
+# g++ c.cpp -o out && ./out < c.txt > output.txt
+# g++ d1.cpp -o out && ./out < d1.txt > output.txt
+# g++ d2.cpp -o out && ./out < d2.txt > output.txt
 
 # g++ test.cpp -o out && ./out
 rm -f out
-# > output.txt
