@@ -1,15 +1,10 @@
 #!/bin/bash
 
-# g++ A1.cpp -o out
-# g++ A2.cpp -o out
-# g++ B1.cpp -o out
-# g++ B2.cpp -o out
-g++ C.cpp -o out
-# g++ dijkstra.cpp -o out
+clear
+# g++ a1.cpp -o out && ./out < a1.txt > output.txt
+# g++ a2.cpp -o out && ./out < a2.txt > output.txt
+# g++ b1.cpp -o out && ./out < b1.txt > output.txt
+# g++ b2.cpp -o out && ./out < b2.txt > output.txt
+# g++ c.cpp -o out && ./out < c.txt > output.txt
 
-./out
-rm out
-
-# cmake -S . -B build
-# cd build
-# make && ./C
+rm -f out
