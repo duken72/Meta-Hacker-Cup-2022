@@ -1,86 +1,56 @@
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include <sstream>
+#include <string>
 #include <algorithm>
 
-// Function to read line into vector of int
-std::vector<int> stringToVector(std::string str)
+using std::cout, std::cin, std::endl;
+using std::vector, std::string, std::find;
+using cards = vector<int>;
+
+cards inputCards(const int& N)
 {
-  std::stringstream iss(str);
-  int number;
-  std::vector<int> outVect;
-  while ( iss >> number )
-    outVect.push_back(number);
-  return outVect;
+  vector<int> output;
+  int val=0;      // 1 ≤ Ai, Bi ≤ N
+  for (size_t i = 0; i < N; i++) {
+    cin >> val;
+    output.push_back(val);
+  }
+  return output;
+}
+
+string solve(const int& K, const cards& cardsA, const cards& cardsB)
+{
+  if (K == 0)
+    return (cardsA == cardsB) ? "YES" : "NO";
+  if (K == 1 && cardsA == cardsB)
+    return "NO";
+  int N = cardsA.size();      // No. cards
+  if (N == 2) {       // If there is only 2 cards
+    if (K%2 == 1)     // With odd K, the order has to change
+      return (cardsA != cardsB) ? "YES" : "NO";
+    if (K%2 == 0)     // With even K, the order stays the same
+      return (cardsA == cardsB) ? "YES" : "NO";
+  }
+  // Otherwise, if it's possible, it would be with 1 single cut
+  auto it = find(cardsA.begin(), cardsA.end(), cardsB[0]);
+  cards cardsC(it, cardsA.end());
+  cardsC.insert(cardsC.end(), cardsA.begin(), it);
+  return (cardsB ==  cardsC) ? "YES" : "NO";
 }
 
 int main()
 {
-  std::ifstream myfileI ("consecutive_cuts_chapter_1_input.txt");
-  std::ofstream myfileO ("output.txt", std::ios::trunc);
-  // T: number of test cases
-  int T;
+  std::ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
-  if (myfileI.is_open() && myfileO.is_open()) {
-    std::string line;
-    std::getline (myfileI,line);
-    T = stoi(line);
-    
-    // Loop over each test case
-    for (size_t t = 0; t < T; t++) {
-      myfileO << "Case #" << t+1 << ": ";
-      // N: number of cards
-      // K: number of cuts
-      int N, K;
-      std::getline (myfileI,line);
-      std::vector<int> vectIn = stringToVector(line);
-      N = vectIn[0];
-      K = vectIn[1];
-      std::getline (myfileI,line);
-      std::vector<int> vectA = stringToVector(line);
-      std::getline (myfileI,line);
-      std::vector<int> vectB = stringToVector(line);
-      if (K == 0) {
-        if (vectA == vectB) {
-          myfileO << "YES\n";
-        } else myfileO << "NO\n";
-        continue;
-      }
-
-      // If K = 1, we have to change the order of the cards
-      if (K == 1 && vectA == vectB) {
-        myfileO << "NO\n";
-        continue;
-      }
-      
-      if (N==2) {
-        // If K is odd, and we have only 2 cards, we also
-        // have to change the order of the cards
-        if (K%2 == 1 && vectA == vectB) {
-          myfileO << "NO\n";
-          continue;
-        }
-        // If K is even, and we have only 2 cards, we also
-        // have to preserve the order of the cards
-        if (K%2 == 0 && vectA != vectB) {
-          myfileO << "NO\n";
-          continue;
-        }
-      }
-
-      // Out of the above edge cases, if it's possible to cut
-      // and reorder, then it would be possible with one single cut
-      auto it = std::find(vectA.begin(), vectA.end(), vectB[0]);
-      std::vector<int> vectC(it, vectA.end());
-      vectC.insert(vectC.end(), vectA.begin(), it);
-
-      if (vectB == vectC) {
-        myfileO << "YES\n";
-      } else myfileO << "NO\n";
-    }
-    myfileI.close();
-    myfileO.close();
-  } else std::cout << "Unable to open file for reading";
+  int T; cin >> T;    // No. cases T: 1 ≤ T ≤ 200
+  for (size_t t = 1; t <= T; t++) {
+    int N;            // No. cards N: 2 ≤ N ≤ 500,000
+    int K;            // No. swaps K: 0 ≤ K ≤ 10e9
+    cin >> N >> K;
+    cards cardsA = inputCards(N);
+    cards cardsB = inputCards(N);
+    cout << "Case #" << t << ": " << solve(K, cardsA, cardsB) << endl;
+  }
   return 0;
 }

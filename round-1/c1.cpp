@@ -26,6 +26,15 @@ void LOGIF(const int& level, Args... args) {
 LL sqrDist(const Coord &a, const Coord &b) {
   return (a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y);
 }
+struct sortDistance {
+  Coord ref1_, ref2_;
+  sortDistance(const Coord& ref1, const Coord& ref2) { ref1_ = ref1; ref2_ = ref2; }
+  bool operator() (const Coord& p1, const Coord& p2) {
+    if (sqrDist(p1, ref1_) == sqrDist(p2, ref1_))
+      return sqrDist(p1, ref2_) > sqrDist(p2, ref2_); 
+    return sqrDist(p1, ref1_) < sqrDist(p2, ref1_);
+  }
+};
 LL cross(const Coord &a, const Coord &b, const Coord &o = Coord(0, 0)) {
   return (a.x-o.x)*(b.y-o.y) - (a.y-o.y)*(b.x-o.x);
 }
@@ -62,41 +71,37 @@ LL solve()
   Coord base = houses[0];
   Coord target = houses[N-1];
   vector<Coord> convexPts = convex_hull(houses.begin(), houses.end());
+  sort(convexPts.begin(), convexPts.end(), sortDistance(base, target));
   auto itTarget = find(convexPts.begin(), convexPts.end(), target);
-  convexPts.erase(itTarget); convexPts.push_back(target);
+  // Ignore points that is further than the target point
+  convexPts.erase(itTarget + 1, convexPts.end());
 
   N = convexPts.size();
   LL d = sqrDist(base, target);
-  if (N == 2)         // Edge case N == 2
+  if (N == 2)               // Edge case N == 2
     return (d <= D2) ? max(K, d) : -1;
 
-  // Dijkstra algorithm with priority queue
+  // Dijkstra algorithm without priority queue
+  // Faster, but got 1 case wrong
+  // Time = 78[s]
+
   // Init distances
   vector<LL> costs(N, MAX); costs[0] = 0;
   Coord src, dest;
   for (size_t i = 1; i < N; i++) {
+    // dest = convexPts[i];
     d = sqrDist(base, convexPts[i]);
     if (d > D2) continue;
     costs[i] = max(K, d);
   }
-  vector<int> unvisited;
-  for (size_t i = 1; i < N; i++)
-    unvisited.push_back(i);
-  while (true) {
-    LOGIF(1, "Total points: ", N-2, " Iter: ", N-2-unvisited.size());
-    int indSrc = -1;
-    LL minDist = MAX;
-    for (int i : unvisited) {
-      if (minDist > costs[i]) {
-        indSrc = i;
-        minDist = costs[i];
-      }
-    }    
-    if (minDist == MAX || indSrc == N-1)
-      break;
-    unvisited.erase(find(unvisited.begin(), unvisited.end(), indSrc));
-    for (int indEnd : unvisited) {
-      d = sqrDist(convexPts[indSrc], convexPts[indEnd]);
+
+  for (size_t indSrc = 1; indSrc < N-1; indSrc++) {
+    LOGIF(1, "Total points: ", N-2, " Iter: ", indSrc);
+    if (costs[indSrc] == MAX) continue;
+    src = convexPts[indSrc];     // Start point
+    for (size_t indEnd = indSrc+1; indEnd < N; indEnd++) {
+      // dest = convexPts[indEnd];  // End point
+      d = sqrDist(src, convexPts[indEnd]);
       if (d > D2) continue;
       LL newCost = costs[indSrc] + max(K, d);
       if (newCost < costs[indEnd])
@@ -121,6 +126,3 @@ int main()
        << duration_cast<seconds>(t2 - t1).count() << "[s]" << endl;
   return 0;
 }
-
-// Time = 211[s]
-// Correctly with priority queue

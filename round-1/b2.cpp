@@ -1,120 +1,54 @@
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include <sstream>
-#include <algorithm>
 #include <math.h>
-#include <set>
 #include <chrono>
 
-// This is insanely fast and efficient
-// Even better than B1's approach
+using std::cout, std::cin, std::endl, std::vector;
+using std::chrono::steady_clock, std::chrono::duration_cast;
+using LL = long long;
+using std::chrono::milliseconds;
 
-const unsigned int M = 1000000007;
+const unsigned int MOD = 1000000007;
 
-// Function to read line into vector of int
-std::vector<long long> stringToVector(std::string str)
+void getCoordinateAndSum(const int& numPoints, LL& sumX, LL& sumY, LL& sumSquare)
 {
-  std::stringstream iss(str);
-  int number;
-  std::vector<long long> outVect;
-  while ( iss >> number )
-    outVect.push_back(number);
-  return outVect;
+  LL x, y;                            // Coordinates: 0 ≤ x, y ≤ 1e9
+  sumX = 0; sumY = 0; sumSquare = 0;  // Reset the sum
+  for (size_t i = 0; i < numPoints; i++) {
+    cin >> x >> y;
+    sumX = (sumX + x)%MOD;
+    sumY = (sumY + y)%MOD;
+    sumSquare = (sumSquare + (x*x)%MOD)%MOD;
+    sumSquare = (sumSquare + (y*y)%MOD)%MOD;
+  }
+}
+
+LL solve()
+{
+  LL sumA, sumB, sumX, sumY;        // Sum of coordinates
+  LL sumSquare1, sumSquare2;        // Sum of coordinate squares
+  int N; cin >> N;                  // No. trees N: 2 ≤ N ≤ 500,000
+  getCoordinateAndSum(N, sumA, sumB, sumSquare1);
+  int Q; cin >> Q;                  // No. wells K: 0 ≤ K ≤ 500,000
+  getCoordinateAndSum(Q, sumX, sumY, sumSquare2);
+  LL output = 0;                    // The output square distances
+  output = ((sumSquare1*Q)%MOD + (sumSquare2*N)%MOD)%MOD;
+  output = (output - (2*sumA*sumX)%MOD + MOD)%MOD;
+  output = (output - (2*sumB*sumY)%MOD + MOD)%MOD;
+  return output;
 }
 
 int main()
 {
-  std::ifstream myfileI ("watering_well_chapter_2_input.txt");
-  std::ofstream myfileO ("output.txt", std::ios::trunc);
+  std::ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
-  if (myfileI.is_open() && myfileO.is_open()) {
-    // T: number of test cases
-    int T;
-
-    std::string line;
-    std::getline (myfileI,line);
-    T = stoi(line);
-    
-    // Loop over each test case
-    for (size_t t = 0; t < T; t++) {
-      myfileO << "Case #" << t+1 << ": ";
-      std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
-      // Vectors of trees and wells' coordinate
-      std::vector<long long> X, Y, A, B;
-      std::vector<long long> temp;
-
-      // Get the trees' coordinates
-      std::getline (myfileI,line);
-      // N: number of trees
-      int N = stoi(line);
-      for (size_t n = 0; n < N; n++) {
-        std::getline (myfileI,line);
-        temp = stringToVector(line);
-        A.push_back(temp[0]);
-        B.push_back(temp[1]);
-      }
-      long long sumA=0, sumB=0;
-      for (auto a : A)
-        sumA = (sumA + a)%M;
-      for (auto b : B)
-        sumB = (sumB + b)%M;
-      
-      // Get the wells' coordinates
-      std::getline (myfileI,line);
-      // Q: number of wells
-      int Q = stoi(line);
-      for (size_t q = 0; q < Q; q++) {
-        std::getline (myfileI,line);
-        temp = stringToVector(line);
-        X.push_back(temp[0]);
-        Y.push_back(temp[1]);
-      }
-      long long sumX=0, sumY=0;
-      for (auto x : X)
-        sumX = (sumX + x)%M;
-      for (auto y : Y)
-        sumY = (sumY + y)%M;
-      
-      // Take sum square dist
-      std::cout << "Case #" << t+1 << ": " << N << " trees, " << Q << " wells\n";
-      // Some modulo formulas
-      // ( a + b) % c = ( ( a % c ) + ( b % c ) ) % c
-      // ( a – b) % c = ( ( a % c ) – ( b % c ) ) % c
-      // ( a * b) % c = ( ( a % c ) * ( b % c ) ) % c
-
-      long long dist = 0;
-      for (size_t a = 0; a < A.size(); a++) {
-        dist += (Q * (((A[a]%M) * (A[a]%M))%M))%M;
-        dist = dist%M;
-      }
-      for (size_t b = 0; b < B.size(); b++) {
-        dist += (Q * (((B[b]%M) * (B[b]%M))%M))%M;
-        dist = dist%M;
-      }
-      for (size_t x = 0; x < X.size(); x++) {
-        dist += (N * (((X[x]%M) * (X[x]%M))%M))%M;
-        dist = dist%M;
-      }
-      for (size_t y = 0; y < Y.size(); y++) {
-        dist += (N * (((Y[y]%M) * (Y[y]%M))%M))%M;
-        dist = dist%M;
-      }
-      dist -= (2 * ((sumA * sumX)%M))%M;
-      dist = (dist+M)%M;
-      dist -= (2 * ((sumB * sumY)%M))%M;
-      dist = (dist+M)%M;
-
-      myfileO << dist << "\n";
-      std::cout << dist << "\n";
-      std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-      std::cout << "Time difference = "
-                << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-                << "[ms]" << std::endl;
-    }
-    myfileI.close();
-    myfileO.close();
-  } else std::cout << "Unable to open file for reading";
+  steady_clock::time_point t1 = steady_clock::now();
+  int T; cin >> T;    // No. test cases T: 1 ≤ T ≤ 50
+  for (size_t t = 1; t <= T; t++)
+    cout << "Case #" << t << ": " << solve() << endl;
+  steady_clock::time_point t2 = steady_clock::now();
+  // cout << "Using coordinates' sum in t = "
+  //      << duration_cast<milliseconds>(t2 - t1).count() << "[ms]" << endl;
   return 0;
 }

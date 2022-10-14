@@ -1,147 +1,101 @@
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include <sstream>
+#include <string>
 #include <algorithm>
 
-// Major difference is that now the cards are not unique.
+using std::cout, std::cin, std::endl;
+using std::vector, std::string, std::find;
+using std::sort, std::unique, std::count;
+using cards = vector<int>;
+const int MAX_CARD = 1000000000;
 
-// Function to read line into vector of int
-std::vector<int> stringToVector(const std::string& str)
+cards inputCards(const int& N)
 {
-  std::stringstream iss(str);
-  int number;
-  std::vector<int> outVect;
-  while ( iss >> number )
-    outVect.push_back(number);
-  return outVect;
+  vector<int> output;
+  int val=0;      // 1 ≤ Ai, Bi ≤ 10e9
+  for (size_t i = 0; i < N; i++) {
+    cin >> val;
+    output.push_back(val);
+  }
+  return output;
 }
 
-// Get the value with minimum count in a vector
-void getValueWithMinCount(const std::vector<int>& vectIn, int& value, int& count)
+void getCardMinCount(const cards& cardsIn, int& cardMin, int& countMin)
 {
-  // Vector of unique values
-  std::vector<int> values(vectIn);
-  std::sort(values.begin(), values.end());
-  auto last = std::unique(values.begin(), values.end());
-  values.erase(last, values.end());
-
-  count = vectIn.size();
-  for (size_t i = 0; i < values.size(); i++) {
-    if (count > std::count(vectIn.begin(), vectIn.end(), values[i])) {
-      value = values[i];
-      count = std::count(vectIn.begin(), vectIn.end(), values[i]);
+  cards uniqueCards(cardsIn);       // Unique cards
+  sort(uniqueCards.begin(), uniqueCards.end());
+  uniqueCards.erase(unique(uniqueCards.begin(), uniqueCards.end()),
+                    uniqueCards.end());
+  countMin = cardsIn.size();       // Assume current max count
+  int uniqueCount;
+  for (auto uniqueCard : uniqueCards) {
+    uniqueCount = count(cardsIn.begin(), cardsIn.end(), uniqueCard);
+    if (countMin > uniqueCount) {
+      cardMin = uniqueCard;
+      countMin = uniqueCount;
     }
-    if (count == 1) break;
+    if (countMin == 1) break;
   }
 }
 
-// Return the new sequence after a cut
-std::vector<int> getCutSequence(const std::vector<int>& vectIn, int pos)
+// Return the new card sequence after a swap
+cards swapCards(const cards& cardsIn, const int& position)
 {
-  std::vector<int> vectOut(vectIn.begin() + pos, vectIn.end());
-  vectOut.insert(vectOut.end(), vectIn.begin(), vectIn.begin() + pos);
-  return vectOut;
+  cards cardsOut(cardsIn.begin() + position, cardsIn.end());
+  cardsOut.insert(cardsOut.end(), cardsIn.begin(), cardsIn.begin() + position);
+  return cardsOut;
+}
+
+string solve(const int& K, const cards& cardsA, const cards& cardsB)
+{
+  if (K == 0)         // Edge case: no cut
+    return (cardsA == cardsB) ? "YES" : "NO";
+  int N = cardsA.size();      // No. cards
+  if (N == 2) {       // Edge case: If there is only 2 cards
+    cards cardsC{cardsA[1], cardsA[0]};
+    if (K%2 == 1)     // With odd K, the order has to be the same as C
+      return (cardsB == cardsC) ? "YES" : "NO";
+    if (K%2 == 0)     // With even K, the order stays the same as A
+      return (cardsA == cardsB) ? "YES" : "NO";
+  }
+  int cardMin, countMin;      // Find the card with minimum no. counts
+  getCardMinCount(cardsA, cardMin, countMin);
+  if (K == 1 && N == 3 && countMin == 1 && cardsA == cardsB)
+    return "NO";
+  if (N == countMin)          // All the cards are the same
+    return "YES";
+  // Try all possible swaps
+  int cardMinIndA = find(cardsA.begin(), cardsA.end(), cardMin) - cardsA.begin();
+  int cardMinIndB;              // The ind of the cardMin in B
+  cards cardsC;                 // A card sequence after swap
+  bool possible = false;        // Whether a possible swap exists
+  auto itB = cardsB.begin();    // Iterator over sequence B
+  for (size_t i = 0; i < countMin; i++) {
+    cardMinIndB = find(itB, cardsB.end(), cardMin) - cardsB.begin();
+    int c = cardMinIndA - cardMinIndB;
+    cardsC = (c > 0) ? swapCards(cardsA, c) : swapCards(cardsA, c+N);
+    if (cardsC == cardsB) {
+      possible = true;
+      break;
+    }
+    itB ++;
+  }
+  return possible ? "YES" : "NO";
 }
 
 int main()
 {
-  std::ifstream myfileI ("consecutive_cuts_chapter_2_input.txt");
-  std::ofstream myfileO ("output.txt", std::ios::trunc);
-  // T: number of test cases
-  int T;
+  std::ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
-  if (myfileI.is_open() && myfileO.is_open()) {
-    std::string line;
-    std::getline (myfileI,line);
-    T = stoi(line);
-    
-    // Loop over each test case
-    for (size_t t = 0; t < T; t++) {
-      myfileO << "Case #" << t+1 << ": ";
-      std::getline (myfileI,line);
-      std::vector<int> vectIn = stringToVector(line);
-      // N: number of cards
-      // K: number of cuts
-      int N = vectIn[0];
-      int K = vectIn[1];
-      
-      // vectA: card sequence A
-      std::getline (myfileI,line);
-      std::vector<int> vectA = stringToVector(line);
-      // vectA: card sequence B
-      std::getline (myfileI,line);
-      std::vector<int> vectB = stringToVector(line);
-
-      // Edge case 1: there is no cut
-      if (K == 0) {
-        if (vectA == vectB) {
-          myfileO << "YES\n";
-        } else myfileO << "NO\n";
-        continue;
-      }
-
-      // Edge case 2: there are only 2 cards
-      if (N==2) {
-        std::vector<int> vectC{vectA[1], vectA[0]};
-        if (K%2 == 1) {
-          if (vectB == vectC)
-            myfileO << "YES\n";
-          else myfileO << "NO\n";
-        } else {
-          if (vectB == vectA)
-            myfileO << "YES\n";
-          else myfileO << "NO\n";
-        }
-        continue;
-      }
-
-      /**
-       * @brief Since the cards are no longer distint. Finding random
-       * card won't work. We will find the one with the minimum number
-       * of counts.
-       */
-
-      // v: value with min count
-      // c: count of value with min count
-      int v, c;
-      getValueWithMinCount(vectA, v, c);
-      int itA = std::find(vectA.begin(), vectA.end(), v) - vectA.begin();      
-      std::vector<int> iterBs;
-      std::vector<int>::iterator itB = vectB.begin();
-      for (size_t i = 0; i < c; i++) {
-        itB = std::find(itB, vectB.end(), v);
-        iterBs.push_back(itB - vectB.begin());
-        itB++;
-      }     
-      
-      // Create a vector of all possible cut sequence
-      std::vector<std::vector<int>> sequences;
-      for (size_t i = 0; i < c; i++) {
-        if (iterBs[i] == itA) {
-          sequences.push_back(vectA);
-          continue;
-        } else if (itA > iterBs[i]) {
-          sequences.push_back(getCutSequence(vectA, itA - iterBs[i]));
-        } else {
-          sequences.push_back(getCutSequence(vectA, N + itA - iterBs[i]));
-        }                        
-      }
-
-      if (std::count(sequences.begin(), sequences.end(), vectB) == 0) {
-        myfileO << "NO\n";
-        continue;
-      }
-
-      // Edge case: K=1, N=3
-      if (K == 1 && N == 3 && c == 1 && vectA == vectB) {
-        myfileO << "NO\n";
-        continue;
-      }      
-      myfileO << "YES\n";
-    }
-    myfileI.close();
-    myfileO.close();
-  } else std::cout << "Unable to open file for reading";
+  int T; cin >> T;    // No. cases T: 1 ≤ T ≤ 205
+  int N;              // No. cards N: 2 ≤ N ≤ 500,000
+  int K;              // No. swaps K: 0 ≤ K ≤ 10e9
+  for (size_t t = 1; t <= T; t++) {
+    cin >> N >> K;
+    cards cardsA = inputCards(N);
+    cards cardsB = inputCards(N);
+    cout << "Case #" << t << ": " << solve(K, cardsA, cardsB) << endl;
+  }
   return 0;
 }
