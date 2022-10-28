@@ -1,7 +1,7 @@
 #!/bin/bash
 
 clear
-# g++ a1.cpp -o out && ./out < a1.txt > output.txt
+g++ a1.cpp -o out && ./out < a1.txt > output.txt
 # g++ a2.cpp -o out && ./out < a2.txt > output.txt
 # g++ a22.cpp -o out && ./out < a2.txt > output.txt
 # g++ b1.cpp -o out && ./out < b1.txt > output.txt

@@ -6,5 +6,5 @@
 
 - [Qualification Round](https://www.facebook.com/codingcompetitions/hacker-cup/2022/qualification-round)
 - [Round 1](https://www.facebook.com/codingcompetitions/hacker-cup/2022/round-1)
-- Round 2
-- Round 3
+- [Round 2](https://www.facebook.com/codingcompetitions/hacker-cup/2022/round-2)
+- [Round 3](https://www.facebook.com/codingcompetitions/hacker-cup/2022/round-3)

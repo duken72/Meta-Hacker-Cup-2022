@@ -9,22 +9,24 @@ using cards = vector<int>;
 
 cards inputCards(const int& N)
 {
-  vector<int> output;
+  vector<int> output(N);
   int val=0;      // 1 ≤ Ai, Bi ≤ N
-  for (size_t i = 0; i < N; i++) {
-    cin >> val;
-    output.push_back(val);
-  }
+  for (size_t i = 0; i < N; i++)
+    cin >> output[i];
   return output;
 }
 
-string solve(const int& K, const cards& cardsA, const cards& cardsB)
+string solve()
 {
+  int N; cin >> N;      // No. cards N: 2 ≤ N ≤ 500,000
+  int K; cin >> K;      // No. swaps K: 0 ≤ K ≤ 10e9
+  cards cardsA = inputCards(N);
+  cards cardsB = inputCards(N);
+
   if (K == 0)
     return (cardsA == cardsB) ? "YES" : "NO";
   if (K == 1 && cardsA == cardsB)
     return "NO";
-  int N = cardsA.size();      // No. cards
   if (N == 2) {       // If there is only 2 cards
     if (K%2 == 1)     // With odd K, the order has to change
       return (cardsA != cardsB) ? "YES" : "NO";
@@ -44,13 +46,7 @@ int main()
   cin.tie(nullptr);
 
   int T; cin >> T;    // No. cases T: 1 ≤ T ≤ 200
-  for (size_t t = 1; t <= T; t++) {
-    int N;            // No. cards N: 2 ≤ N ≤ 500,000
-    int K;            // No. swaps K: 0 ≤ K ≤ 10e9
-    cin >> N >> K;
-    cards cardsA = inputCards(N);
-    cards cardsB = inputCards(N);
-    cout << "Case #" << t << ": " << solve(K, cardsA, cardsB) << endl;
-  }
+  for (size_t t = 1; t <= T; t++)
+    cout << "Case #" << t << ": " << solve() << endl;
   return 0;
 }
