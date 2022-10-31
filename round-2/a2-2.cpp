@@ -1,4 +1,3 @@
-// Based on the given solution
 #include <chrono>
 #include <iostream>
 #include <vector>
@@ -22,56 +21,67 @@ const LL get_hash(int v) {
   return (x ^ (x >> 31)) % MOD;
 }
 
-// https://cp-algorithms.com/data_structures/segment_tree.html
 template <typename T>
-class segment_tree {
-  static T merge(const T &a, const T &b) { return add(a, b); }
-  int length;
-  vector<T> values;
+struct Node {
+  T value_;
+  int low_, high_;
+  Node<T> *left_, *right_;
 
-  void build(int id, int low, int high, const vector<T>& array) {
-    if (low == high) {
-      values[id] = array[low];
+  Node() : value_(0), low_(0), high_(0), left_(nullptr), right_(nullptr) {};
+
+  Node(int low, int high, const vector<T>& array)
+  : low_(low), high_(high), left_(nullptr), right_(nullptr) {
+    if (low_ == high_) {
+      value_ = array[low_];
       return;
     }
-    int mid = low + (high - low) / 2;
-    build(id * 2 + 1, low, mid, array);
-    build(id * 2 + 2, mid + 1, high, array);
-    values[id] = merge(values[id * 2 + 1], values[id * 2 + 2]);
+    int mid_ = low_ + (high_ - low_) / 2;
+    left_ = new Node(low_, mid_, array);
+    right_ = new Node(mid_ + 1, high_, array);
+    value_ = add(left_->value_, right_->value_);
   }
 
-  T query(int id, int low, int high, int tgt_low, int tgt_high) const {
-    if (low == tgt_low && high == tgt_high)
-      return values[id];
-    int mid = low + (high - low) / 2;
-    if (tgt_high <= mid)
-      return query(id * 2 + 1, low, mid, tgt_low, tgt_high);
-    if (tgt_low > mid)
-      return query(id * 2 + 2, mid + 1, high, tgt_low, tgt_high);
-    return merge(
-      query(id * 2 + 1, low, mid, tgt_low, mid),
-      query(id * 2 + 2, mid + 1, high, mid + 1, tgt_high)); 
+  T query(int low, int high) {
+    if (low == low_ && high == high_)
+      return value_;
+    int mid_ = low_ + (high_ - low_) / 2;
+    if (high <= mid_)
+      return left_->query(low, high);
+    if (low > mid_)
+      return right_->query(low, high);    
+    return add(left_->query(low, mid_), right_->query(mid_ + 1, high));
   }
 
-  void update(int id, int low, int high, int target, const T &val) {
-    if (target < low || target > high)
+  void update(int id, T value) {
+    if (id < low_ || id > high_)
       return;
-    if (low == high) {
-      values[id] = val;
+    if (low_ == high_) {
+      value_ = value;
       return;
     }
-    int mid = low + (high - low) / 2;
-    update(id * 2 + 1, low, mid, target, val);
-    update(id * 2 + 2, mid + 1, high, target, val);
-    values[id] = merge(values[id * 2 + 1], values[id * 2 + 2]);
+    left_->update(id, value);
+    right_->update(id, value);
+    value_ = add(left_->value_, right_->value_);
   }
+};
 
- public:
-  segment_tree(const vector<T>& array) : length(array.size()), values(4 * length) {
-    build(0, 0, length - 1, array);
-  }
-  T query(int low, int high) const { return query(0, 0, length - 1, low, high); }
-  void update(int id, const T &val) { update(0, 0, length - 1, id, val); }
+// Segment tree's implementation using Node*, just longer :(
+template <typename T>
+class ST {
+  Node<T> *root;
+
+  static void clean_up(Node<T>* node) {
+    if (node->left_ != nullptr)
+      clean_up(node->left_);
+    if (node->right_ != nullptr)
+      clean_up(node->right_);
+    delete node;
+  };
+public:
+  ST(const vector<T>& array) { root = new Node(0, array.size()-1, array); }
+  ~ST() { clean_up(root); }
+  T query(int low, int high) const { return root->query(low, high); }
+  void update(int id, const T& new_value) { root->update(id, new_value); }
 };
 
 int solve()
@@ -84,7 +94,7 @@ int solve()
     hash_value[i] = get_hash(Ai);
     hash_ref[hash_value[i]] = Ai;
   }
-  segment_tree<LL> seg_tree(hash_value);
+  ST<LL> seg_tree(hash_value);
   int result = 0;
   int Q; cin >> Q;                // No. query Q: 1 ≤ Q ≤ 10^6
   for (int i = 0, op, x, y, l, r; i < Q; i++) {

@@ -126,3 +126,4 @@ int main()
     cout << "Case #" << t << ": " << solve(FACTORIAL_MOD) << endl;
   return 0;
 }
+// Time = 1-2[s]

@@ -9,6 +9,8 @@ using std::chrono::steady_clock, std::chrono::duration_cast;
 using sec = std::chrono::seconds;
 using mins = std::chrono::minutes;
 
+const int DEBUG_LEVEL = 2;
+
 // Supporting function for: printing and logging
 template <typename T>
 ostream & operator << (ostream& os, const vector<T>& vec)
