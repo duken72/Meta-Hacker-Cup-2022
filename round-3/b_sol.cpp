@@ -1,3 +1,6 @@
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -67,6 +70,7 @@ long long solve() {
     T.resize(M);
     for (int j = 1; j < M; j++) {
       cin >> p >> c;
+      cout << j << "/" << M << endl;
       T[--p].child[c - 'a'] = &T[j];
     }
   }
@@ -93,8 +97,7 @@ int main() {
   cin.tie(nullptr);
   int T;
   cin >> T;
-  for (int t = 1; t <= T; t++) {
+  for (int t = 1; t <= T; t++)
     cout << "Case #" << t << ": " << solve() << endl;
-  }
   return 0;
 }
