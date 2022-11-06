@@ -34,3 +34,12 @@ void LOGIF(const int& level, Args... args)
   if (level > DEBUG_LEVEL) return;
   (cout << ... << args) << "\n";
 }
+
+// #include <chrono>
+// using std::chrono::steady_clock, std::chrono::duration_cast;
+// using sec = std::chrono::seconds;
+// using mins = std::chrono::minutes;
+// steady_clock::time_point t1 = steady_clock::now();
+// steady_clock::time_point t2 = steady_clock::now();
+// cout << "Time t = "
+//      << duration_cast<milliseconds>(t2 - t1).count() << "[ms]" << endl;

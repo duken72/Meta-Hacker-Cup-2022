@@ -1,22 +1,21 @@
+#pragma GCC optimize("O2,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
 #include <iostream>
 #include <vector>
 #include <string>
 #include <algorithm>
 
-using std::cout, std::cin, std::endl;
-using std::vector, std::string, std::find;
-using std::sort, std::unique, std::count;
+using namespace std;
+
 using cards = vector<int>;
-const int MAX_CARD = 1000000000;
+const int MAX_CARD = 1'000'000'000;
 
 cards inputCards(const int& N)
 {
-  vector<int> output;
-  int val=0;      // 1 ≤ Ai, Bi ≤ 10e9
-  for (size_t i = 0; i < N; i++) {
-    cin >> val;
-    output.push_back(val);
-  }
+  vector<int> output(N);
+  for (size_t i = 0; i < N; i++)
+    cin >> output[i];   // Card's values: 1 ≤ Ai, Bi ≤ 10e9
   return output;
 }
 
@@ -46,11 +45,14 @@ cards swapCards(const cards& cardsIn, const int& position)
   return cardsOut;
 }
 
-string solve(const int& K, const cards& cardsA, const cards& cardsB)
+string solve()
 {
+  int N; cin >> N;    // No. cards N: 2 ≤ N ≤ 500,000
+  int K; cin >> K;    // No. swaps K: 0 ≤ K ≤ 10e9
+  cards cardsA = inputCards(N);
+  cards cardsB = inputCards(N);
   if (K == 0)         // Edge case: no cut
     return (cardsA == cardsB) ? "YES" : "NO";
-  int N = cardsA.size();      // No. cards
   if (N == 2) {       // Edge case: If there is only 2 cards
     cards cardsC{cardsA[1], cardsA[0]};
     if (K%2 == 1)     // With odd K, the order has to be the same as C
@@ -87,15 +89,9 @@ int main()
 {
   std::ios_base::sync_with_stdio(false);
   cin.tie(nullptr);
-
   int T; cin >> T;    // No. cases T: 1 ≤ T ≤ 205
-  int N;              // No. cards N: 2 ≤ N ≤ 500,000
-  int K;              // No. swaps K: 0 ≤ K ≤ 10e9
-  for (size_t t = 1; t <= T; t++) {
-    cin >> N >> K;
-    cards cardsA = inputCards(N);
-    cards cardsB = inputCards(N);
-    cout << "Case #" << t << ": " << solve(K, cardsA, cardsB) << endl;
-  }
+  for (size_t t = 1; t <= T; t++)
+    cout << "Case #" << t << ": " << solve() << endl;
   return 0;
 }
+// Time = 3.2[s]

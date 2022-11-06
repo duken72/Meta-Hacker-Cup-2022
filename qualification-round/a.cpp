@@ -1,26 +1,27 @@
+#pragma GCC optimize("O2,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <string>
 
-using std::cout, std::cin, std::endl;
-using std::vector, std::count, std::max_element, std::string;
+using namespace std;
 const int S = 100;
 
-/**
- * Check if it's possible to setup the display case
- * It would be impossible if:
- * 1. If the number of part N is greater than the capacity of two case 2K
- * 2. If there is more than 2 items of the same style
- */
-string solve(const int& N, const int& K, const vector<int>& vectPart)
+string solve()
 {
-  if (N > 2*K) return "NO";         // Criteria 1    
-  std::vector<int> partCounts;      // Counts of each part type
+  int N; cin >> N;                  // No. parts N: 1 ≤ N ≤ 100.
+  int K; cin >> K;                  // Case capacity K: 1 ≤ K ≤ 100
+  vector<int> vectPart(N);          // Input part indices
+  for (int n = 0; n < N; n++)
+    cin >> vectPart[n];             // Part index Si: 1 ≤ Si ≤ 100
+  if (N > 2*K) return "NO";         // Criterion 1: N < 2K
+  std::vector<int> partCounts(S+1); // Counts of each part type
   for (size_t s = 0; s <= S; s++)
-    partCounts.push_back(count(vectPart.begin(), vectPart.end(), s));
+    partCounts[s] = count(vectPart.begin(), vectPart.end(), s);
   int maxCount = *max_element(partCounts.begin(), partCounts.end());
-  if (maxCount > 2) return "NO";    // Criteria 2    
+  if (maxCount > 2) return "NO";    // Criterion 2: no more than 2 same items
   return "YES";
 }
 
@@ -28,19 +29,9 @@ int main()
 {
   std::ios_base::sync_with_stdio(false);
   cin.tie(nullptr);
-
-  int T; cin >> T;    // No. test case T: 1 ≤ T ≤ 90
-  int N;              // No. parts N: 1 ≤ N ≤ 100
-  int K;              // Capacity of each case K: 1 ≤ K ≤ 100
-  int Si;             // Part index Si: 1 ≤ Si ≤ 100
-  for (size_t t = 1; t <= T; t++) {
-    cin >> N >> K;
-    vector<int> vectPart;         // Input part indices
-    for (size_t n = 0; n < N; n++) {
-      cin >> Si;
-      vectPart.push_back(Si);
-    }
-    cout << "Case #" << t << ": " << solve(N, K, vectPart) << endl;
-  }
+  int T; cin >> T;                  // No. test case T: 1 ≤ T ≤ 90
+  for (int t = 1, N, K; t <= T; t++)
+    cout << "Case #" << t << ": " << solve() << endl;
   return 0;
 }
+// Time t = 7[ms]

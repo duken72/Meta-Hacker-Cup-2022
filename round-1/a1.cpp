@@ -1,18 +1,19 @@
+#pragma GCC optimize("O2,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
 #include <iostream>
 #include <vector>
 #include <string>
 #include <algorithm>
 
-using std::cout, std::cin, std::endl;
-using std::vector, std::string, std::find;
+using namespace std;
 using cards = vector<int>;
 
 cards inputCards(const int& N)
 {
   vector<int> output(N);
-  int val=0;      // 1 ≤ Ai, Bi ≤ N
   for (size_t i = 0; i < N; i++)
-    cin >> output[i];
+    cin >> output[i];   // Card's values: 1 ≤ Ai, Bi ≤ N
   return output;
 }
 
@@ -22,7 +23,6 @@ string solve()
   int K; cin >> K;      // No. swaps K: 0 ≤ K ≤ 10e9
   cards cardsA = inputCards(N);
   cards cardsB = inputCards(N);
-
   if (K == 0)
     return (cardsA == cardsB) ? "YES" : "NO";
   if (K == 1 && cardsA == cardsB)
@@ -44,9 +44,9 @@ int main()
 {
   std::ios_base::sync_with_stdio(false);
   cin.tie(nullptr);
-
   int T; cin >> T;    // No. cases T: 1 ≤ T ≤ 200
   for (size_t t = 1; t <= T; t++)
     cout << "Case #" << t << ": " << solve() << endl;
   return 0;
 }
+// Time = 750[ms]

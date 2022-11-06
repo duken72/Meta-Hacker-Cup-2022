@@ -1,12 +1,15 @@
+#pragma GCC optimize("O2,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
 #include <iostream>
 #include <string>
 #include <vector>
 
-using std::cout, std::cin, std::endl;
-using std::string, std::vector, std::abs;
+using namespace std;
+
 using vectInt = vector<int>;
 using vectCounts = vector<vector<int>>;
-const int ALPHABET = 26;                // Alphabet size
+const int ALPHABET = 26;    // Alphabet size
 
 // Overload operator - for vectors
 vectInt operator -(const vectInt& vect1, const vectInt& vect2)
@@ -22,8 +25,7 @@ vectCounts countChars(const string& inString)
 {
   const int aId = int('a');             // Char to indices
   const int N = inString.size();        // String length
-  // The N x 26 matrix of counts
-  vectCounts charCounts(N, vectInt(ALPHABET, 0));
+  vectCounts charCounts(N, vectInt(ALPHABET, 0)); // The N x 26 matrix of counts
   charCounts[0][int(inString[0]) - aId] = 1;
   for (int i = 1, charId; i < N; i++) {
     charId = int(inString[i]) - aId;
@@ -43,8 +45,9 @@ vectInt getCounts(const vectCounts& charCounts, int id)
 }
 vectInt getCounts(const vectCounts& charCounts, int id1, int id2)
 {
-  return (id1 == 0) ? getCounts(charCounts, id2)
-                    : getCounts(charCounts, id2) - getCounts(charCounts, id1-1);
+  vectInt c1 = getCounts(charCounts, id1-1);
+  vectInt c2 = getCounts(charCounts, id2);
+  return (id1 == 0) ? c2 : (c2 - c1);
 }
 
 // Check if the dist between two vectors is 0 or 1
@@ -89,10 +92,9 @@ int solve()
   string S; cin >> S; // Input S: 1 ≤ ∣S∣ ≤ 10^6, Si ∈ {'a', ..., 'z'}
   int Q; cin >> Q;    // No. queries Q: 1 ≤ Q ≤ 10^6
   int C = 0;          // No. almost perfect string C: 1 ≤ C ≤ 10^6
-  int L = 0, R = 0;   // Positions L, R: 1 ≤ Li ≤ Ri ≤ ∣S∣
   vectCounts charCounts = countChars(S);
-  for (size_t q = 0; q < Q; q++) {
-    cin >> L >> R; L--; R--;
+  for (int q = 0, L, R; q < Q; q++) {
+    cin >> L >> R; L--; R--;  // Positions L, R: 1 ≤ Li ≤ Ri ≤ ∣S∣
     if (checkSubstring(L, R, charCounts))
       C += 1;
   }
