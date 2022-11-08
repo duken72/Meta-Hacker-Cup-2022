@@ -1,94 +1,38 @@
-// Correct, but not fast enough
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
 #include <iostream>
 #include <vector>
+#include <string>
+#include <unordered_map>
 
-const int ALPHABET_SIZE = 26;
-
-using std::cout, std::cin, std::endl;
-using std::vector, std::string;
+using namespace std;
 using LL = unsigned long long;
 
 // Combinatorial: n choose 3
-template <typename T>
-T nC3(T n) { return (n < 3) ? 0 : n*(n-1)*(n-2) / 6; }
-
-struct Node {
-  LL count_;
-  vector<Node*> child;
-  Node(LL count = 0) : count_(count), child(ALPHABET_SIZE, nullptr) {}
-};
-
-class Trie
-{
-  Node* root;
-
-  static void clean_up(Node* node) {
-    for (size_t i = 0; i < ALPHABET_SIZE; i++) {
-      if (node->child[i] != nullptr)
-        clean_up(node->child[i]);
-    }
-    delete node;
-  }
-  static int char2Id(char c) { return c - 'a'; }
-
-  void update(Node* node, string str) {
-    if (str == "") {
-      node->count_++;
-      return;
-    }
-    int id = char2Id(str[0]);
-    if (str.size() == 1) {
-      if (node->child[id] == nullptr) {
-        node->child[id] = new Node(1);
-        return;
-      } else {
-        node->child[id]->count_++;
-        return;
-      }
-    }
-    return update(node->child[id], str.substr(1));
-  }
-
-  template <typename Func>
-  static void walk(Node *n, Func f) {
-    f(n->count_);
-    for (int i = 0; i < ALPHABET_SIZE; i++) {
-      if (n->child[i] != nullptr)
-        walk(n->child[i], f);
-    }
-  }
-
-public:
-  Trie() :  root(new Node()) {}
-  ~Trie() { clean_up(root); }
-  void update(const string& str) { update(root, str); };
-
-  template <typename Func>
-  void walk(Func f) const {
-    walk(root, f);
-  }
-};
-
+LL nC3(LL n) { return (n < 3) ? 0 : n*(n-1)*(n-2) / 6; }
 
 LL solve()
 {
   int N; cin >> N;              // No. tries 3 ≤ N ≤ 100
-  char C;                       // Edge label Cij ∈ {'a',...,'z'}
-  Trie trie;
-  for (int n = 0, M; n < N; n++) {
-    cin >> M;                   // No. nodes 1 ≤ M ≤ 1e6
-    vector<string> trie_i(M);
-    trie.update("");            // Cause loop starts at m = 1
-    for (size_t m = 1, P; m < M; m++) {
+  unordered_map<size_t, LL> hash_ref;
+  char C;                       // Edge label C ∈ {'a',...,'z'}
+  for (int n = 0, Mi; n < N; n++) {
+    cin >> Mi;                  // No. nodes 1 ≤ Mi ≤ 1e6
+    vector<string> trie(Mi);
+    hash_ref[hash<string>{}("")]++;
+    for (size_t m = 1, P; m < Mi; m++) {
       cin >> P >> C; P--;       // Index of parent 1 ≤ P < j
-      trie_i[m] = trie_i[P] + C;
-      trie.update(trie_i[m]);
+      trie[m] = trie[P] + C;
+      size_t hashstr = hash<string>{}(trie[m]);
+      hash_ref[hashstr]++;
     }
   }
+  if (N <= 3)
+    return hash_ref.size();
   LL result = 0;
-  trie.walk([&](LL k) {
-    result += nC3(N) - nC3(N-k);
-  });
+  for(const auto [key, value] : hash_ref)
+    result += nC3(N) -  nC3(N-value);
   return result;
 }
 
@@ -101,3 +45,5 @@ int main()
     cout << "Case #" << t << ": " << solve() << endl;
   return 0;
 }
+// Hashing is 4x slower than creating the graph
+// Time t = 24[s], failed 1 case (Out of RAM)

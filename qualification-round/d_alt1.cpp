@@ -1,5 +1,5 @@
 // Faster than d2, but still slow due to using vector??
-#pragma GCC optimize("O2,unroll-loops")
+#pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 
 #include <iostream>

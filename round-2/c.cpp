@@ -1,15 +1,22 @@
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
 #include <iostream>
 #include <vector>
 
-using std::cout, std::cin, std::endl;
+using namespace std;
+
 using LL = long long;
+const LL MOD = 1000000007;
+
+// Pre-create an array of the mod of factorial from 1 to 9e6
+std::vector<LL> FACTORIAL_MOD(9000000, 1);
 
 // Modular Arithmetic
-const LL MOD = 1000000007;
 template <typename T>
-T subMod(const T& a, const T& b) { return ((a - b)%MOD + MOD)%MOD; }
+T subMod(const T& a, const T& b) { return ((a - b) % MOD + MOD) % MOD; }
 template <typename T>
-T mulMod(const T& a, const T& b) { return (a * b)%MOD; }
+T mulMod(const T& a, const T& b) { return (a * b) % MOD; }
 
 // Find GCD of two numbers (greatest common divisor)
 template <typename T>
@@ -29,6 +36,7 @@ T gcdExtended(T a, T b, T* x, T* y) {
   *y = x1;
   return gcd;
 }
+
 // Simplify a fraction
 template <typename T>
 void lowestFraction(T& num, T& denom) {
@@ -36,6 +44,7 @@ void lowestFraction(T& num, T& denom) {
   num /= GCD;
   denom /= GCD;
 }
+
 // Mod Inverse
 // geeksforgeeks.org/multiplicative-inverse-under-modulo-m/
 LL modInverse(LL A) {
@@ -46,8 +55,7 @@ LL modInverse(LL A) {
 }
 
 template <typename T>
-void getCombinatorial(const LL& N, const LL& K,
-  const std::vector<LL>& FACTORIAL_MOD, T& num, T& denom)
+void getCombinatorial(const LL& N, const LL& K, T& num, T& denom)
 {
   if (N < K) {
     num = 0;
@@ -65,18 +73,18 @@ void getCombinatorial(const LL& N, const LL& K,
 
 // Find Prob of getting a chocolate cookies
 LL getProb(const LL& C1, const LL& C2, const LL& C3, const LL& C4,
-  const std::vector<LL>& FACTORIAL_MOD, const LL& K)
+  const LL& K)
 {
   LL C = C1 + C2 + C3 + C4;       // Total no. cookies
   if (K + 1 > C - C4)             // Edge case: K+1 > C1 + C2 + C3
     return 0;  
   LL x, y;    // Final prob of getting chocolate cookies: x/y
   LL x1, y1;  // No. ways to pick K+1 from (C1+C2+C3)=(C-C4): x1/y1
-  getCombinatorial(C - C4, K+1, FACTORIAL_MOD, x1, y1);
+  getCombinatorial(C - C4, K+1, x1, y1);
   LL x2, y2;  // No. ways to pick K+1 from C2: x2/y2
-  getCombinatorial(C2, K+1, FACTORIAL_MOD, x2, y2);
+  getCombinatorial(C2, K+1, x2, y2);
   LL x3, y3;  // No. ways to pick K+1 from C: x3/y3
-  getCombinatorial(C, K+1, FACTORIAL_MOD, x3, y3);
+  getCombinatorial(C, K+1, x3, y3);
   // No. ways to pick at least 1 cookies of W1: x/y = x1/y1 - x2/y2
   x = subMod(mulMod(x1, y2), mulMod(x2, y1));
   y = mulMod(y1, y2);
@@ -93,7 +101,7 @@ LL getProb(const LL& C1, const LL& C2, const LL& C3, const LL& C4,
   return mulMod(x, modInverse(y));
 }
 
-LL solve(const std::vector<LL>& FACTORIAL_MOD)
+LL solve()
 {
   int N; cin >> N;  // No. of batches N: 2 ≤ N ≤ 3000
   LL K; cin >> K;   // No. of times weighting K: 1 ≤ K ≤ 9e6
@@ -110,20 +118,19 @@ LL solve(const std::vector<LL>& FACTORIAL_MOD)
     else
       C4 += Ci;
   }
-  return getProb(C1, C2, C3, C4, FACTORIAL_MOD, K);
+  return getProb(C1, C2, C3, C4, K);
 }
+
 int main()
 {
   std::ios_base::sync_with_stdio(false);
   cin.tie(nullptr);
-
-  int T; cin >> T;    // No. test case T: 1 ≤ T ≤ 1000
   // Pre-create an array of the mod of factorial from 1 to 9e6
-  std::vector<LL> FACTORIAL_MOD(9000000, 1);
   for (LL i = 1; i < 9000000; i++)
     FACTORIAL_MOD[i] = mulMod(FACTORIAL_MOD[i-1], i+1);
+  int T; cin >> T;    // No. test case T: 1 ≤ T ≤ 1000
   for (size_t t = 1; t <= T; t++)
-    cout << "Case #" << t << ": " << solve(FACTORIAL_MOD) << endl;
+    cout << "Case #" << t << ": " << solve() << endl;
   return 0;
 }
-// Time = 1-2[s]
+// Time = 500[ms]

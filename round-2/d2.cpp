@@ -1,16 +1,22 @@
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
 #include <iostream>
 #include <vector>
 
-using std::cout, std::cin, std::endl, std::vector;
+using namespace std;
 using LL = long long;
 using vectLL = vector<LL>;
 
 // Least Significant Bit (id & ~(id-1) also works)
 inline int LSB(int id) { return id & -id; }
+
 struct FenwickTree
 {
   vectLL A, T;          // Original array A and the tree T
   FenwickTree(int N) : A(N + 1), T(N + 1) {}
+  LL at(int id) const { return A[id]; } // Get array value at id
+
   LL query(int id) const
   {
     LL sum = 0;
@@ -18,6 +24,8 @@ struct FenwickTree
       sum += T[id];
     return sum;
   }
+  LL query(int low, int high) const { return query(high) - query(low - 1); }
+  
   // Update by increment
   void update(int id, LL val)
   {
@@ -26,8 +34,6 @@ struct FenwickTree
     for (; id < N; id += LSB(id))
       T[id] += val;
   }
-  LL at(int id) const { return A[id]; } // Get array value at id
-  LL query(int low, int high) const { return query(high) - query(low - 1); }
   // Update by setting
   void set(int id, LL val) { update(id, val - A[id]); }
 };
@@ -126,4 +132,4 @@ int main()
     cout << "Case #" << t << ": " << solve() << endl;
   return 0;
 }
-// Time = 20-23[s]
+// Time = 19[s]

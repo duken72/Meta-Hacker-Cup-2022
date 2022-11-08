@@ -70,7 +70,8 @@ long long solve() {
     T.resize(M);
     for (int j = 1; j < M; j++) {
       cin >> p >> c;
-      cout << j << "/" << M << endl;
+      // if (M >= 998500) continue;
+      // cout << j << "/" << M << endl;
       T[--p].child[c - 'a'] = &T[j];
     }
   }
@@ -101,3 +102,4 @@ int main() {
     cout << "Case #" << t << ": " << solve() << endl;
   return 0;
 }
+// Time t = 6.5[s], failed 1 case (Out of RAM)

@@ -1,18 +1,22 @@
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
 // Based on the given solution
 #include <chrono>
 #include <iostream>
 #include <vector>
 #include <unordered_map>
 
-using std::cout, std::cin, std::endl;
-using std::vector, std::unordered_map;
-using LL = long long;
+using namespace std;
 
+using LL = long long;
 const LL MOD = (1LL << 62) - 57;
 const LL SEED = std::chrono::steady_clock::now().time_since_epoch().count();
+
 // Modular arithmetics
 LL add(LL a, LL b) { return (a % MOD + b % MOD) % MOD; }
 LL sub(LL a, LL b) { return ((a - b) % MOD + MOD) % MOD; }
+
 // Hash function: http://xorshift.di.unimi.it/splitmix64.c
 const LL get_hash(int v) {
   unsigned long long x = v + SEED;
@@ -122,4 +126,4 @@ int main()
     cout << "Case #" << t << ": " << solve() << endl;
   return 0;
 }
-// Time: 8s
+// Time t = 6.5[s]

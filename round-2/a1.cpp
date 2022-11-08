@@ -1,4 +1,4 @@
-#pragma GCC optimize("O2,unroll-loops")
+#pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 
 #include <iostream>
@@ -45,9 +45,8 @@ vectInt getCounts(const vectCounts& charCounts, int id)
 }
 vectInt getCounts(const vectCounts& charCounts, int id1, int id2)
 {
-  vectInt c1 = getCounts(charCounts, id1-1);
   vectInt c2 = getCounts(charCounts, id2);
-  return (id1 == 0) ? c2 : (c2 - c1);
+  return (id1 == 0) ? c2 : (c2 - getCounts(charCounts, id1-1));
 }
 
 // Check if the dist between two vectors is 0 or 1
@@ -110,4 +109,4 @@ int main()
     cout << "Case #" << t << ": " << solve() << endl;
   return 0;
 }
-// 17-21 secs
+// Time t = 9[s]

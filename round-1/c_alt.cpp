@@ -1,5 +1,5 @@
 // Faster, but somehow got 1 case wrong
-#pragma GCC optimize("O2,unroll-loops")
+#pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 
 #include <iostream>
