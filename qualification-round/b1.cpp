@@ -2,64 +2,77 @@
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 
 #include <iostream>
+#include <array>
 #include <vector>
-#include <string>
 
 using namespace std;
 const char EMPTY = '.', TREE = '^';
 
-/**
- * It would be impossible if the width or height is 1,
- * unless there is no tree. Otherwise, it is always possible.
- * Simply add trees to all positions would work
- */
+#define USE_ARRAY true
+#if USE_ARRAY
+const int S = 100;
+array<array<char, S>, S> scene_;
+#endif
+
 struct Scene {
-  int row_;
-  int column_;
-  vector<vector<char>> scene_;
+    int row_;
+    int column_;
 
-  Scene(int row, int column) : row_(row), column_(column),
-    scene_(row, vector(column, EMPTY)) {}
-
-  bool haveTree() const {
-    for (size_t r = 0; r < row_; r++) {
-      for (size_t c = 0; c < column_; c++) {
-        if (scene_[r][c] == TREE)
-          return true;
-      }
+#if USE_ARRAY
+    Scene(int row, int column) : row_(row), column_(column) {
+        scene_.fill({EMPTY});
     }
-    return false;
-  }
+#else
+    vector<vector<char>> scene_;
+    Scene(int row, int column) : row_(row), column_(column),
+        scene_(row, vector(column, EMPTY)) {}
+#endif
+
+    bool haveTree() const {
+        for (int r = 0; r < row_; r++) {
+            for (int c = 0; c < column_; c++) {
+                if (scene_[r][c] == TREE)
+                    return true;
+            }
+        }
+        return false;
+    }
 };
 
-string solve()
+void solve()
 {
-  int R, C; cin >> R >> C;  // No. rows & columns: 1 ≤ R, C ≤ 100
-  char space;               // Map space: tree '^' or blank '.'
-  Scene scene(R, C);
-  for (size_t r = 0; r < R; r++) {
-    for (size_t c = 0; c < C; c++)
-      cin >> scene.scene_[r][c];
-  }
-  bool haveTree = scene.haveTree();
-  if ((scene.row_==1 || scene.column_==1) && haveTree)
-    return "Impossible";
-  string result = "Possible";
-  for (size_t r = 0; r < R; r++) {
-    result += '\n';
-    for (size_t c = 0; c < C; c++)
-      result += haveTree ? TREE : EMPTY;
-  }
-  return result;
+    int R, C;               // No. rows & columns
+    cin >> R >> C;          // 1 ≤ R, C ≤ 100
+    Scene scene(R, C);
+    for (size_t r = 0; r < R; r++)
+        for (size_t c = 0; c < C; c++)
+#if USE_ARRAY
+            cin >> scene_[r][c];
+#else
+            cin >> scene.scene_[r][c];
+#endif
+
+    bool haveTree = scene.haveTree();
+    if ((scene.row_==1 || scene.column_==1) && haveTree) {
+        cout << "Impossible" << endl;
+        return;
+    }
+    cout << "Possible" << endl;
+    for (size_t r = 0; r < R; r++) {
+        for (size_t c = 0; c < C; c++)
+            cout << (haveTree ?  TREE : EMPTY);
+        cout << endl;
+    }
 }
 
 int main()
 {
-  std::ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  int T; cin >> T;          // No. test case T: 1 ≤ T ≤ 85
-  for (int t = 1; t <= T; t++)
-    cout << "Case #" << t << ": " << solve() << endl;
-  return 0;
+    std::ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int T; cin >> T;                // No. test case T: 1 ≤ T ≤ 85
+    for (int t = 1; t <= T; t++) {
+        cout << "Case #" << t << ": ";
+        solve();
+    }
+    return 0;
 }
-// Time t = 5[ms]

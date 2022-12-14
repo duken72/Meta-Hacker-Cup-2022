@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Finished: a1, a2, c, d1, d2
-# Unfinished: b
+# Done: a1, a2, c, d1, d2
+# Undone: b
 clear
-g++ b.cpp -o out && ./out < b.txt #> output.txt
+g++     c.cpp -o out
+./out < c.txt #> output.txt
 rm -f out

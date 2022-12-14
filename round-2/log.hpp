@@ -15,14 +15,15 @@ const int DEBUG_LEVEL = 2;
 template <typename T>
 ostream & operator << (ostream& os, const vector<T>& vec)
 {
-  cout << "Vector: ";
-  for(auto elem : vec)
-    os << elem << " ";
-  return os;
+    cout << "Vector: ";
+    for(auto elem : vec)
+        os << elem << " ";
+    return os;
 }
+
 template <class... Args>
 void LOGIF(const int& level, Args... args)
 {
-  if (level > DEBUG_LEVEL) return;
-  (cout << ... << args) << "\n";
+    if (level > DEBUG_LEVEL) return;
+    (cout << ... << args) << "\n";
 }

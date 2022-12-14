@@ -14,32 +14,25 @@ using mins = std::chrono::minutes;
 template <typename T>
 ostream & operator << (ostream& os, const vector<T>& vec)
 {
-  cout << "Vector: ";
-  for(auto elem : vec)
-    os << elem << " ";
-  cout << endl;
-  return os;
+    cout << "Vector: ";
+    for(auto elem : vec)
+        os << elem << " ";
+    cout << endl;
+    return os;
 }
+
 template <typename T1, typename T2>
 ostream & operator << (ostream& os, const unordered_map<T1, T2> map)
 {
-  cout << "Map:\n";
-  for( const auto& [key, value] : map )
-    os << key << " " << value << endl;
-  return os;
+    cout << "Map:\n";
+    for( const auto& [key, value] : map )
+        os << key << " " << value << endl;
+    return os;
 }
+
 template <class... Args>
 void LOGIF(const int& level, Args... args)
 {
-  if (level > DEBUG_LEVEL) return;
-  (cout << ... << args) << "\n";
+    if (level > DEBUG_LEVEL) return;
+    (cout << ... << args) << "\n";
 }
-
-// #include <chrono>
-// using std::chrono::steady_clock, std::chrono::duration_cast;
-// using sec = std::chrono::seconds;
-// using mins = std::chrono::minutes;
-// steady_clock::time_point t1 = steady_clock::now();
-// steady_clock::time_point t2 = steady_clock::now();
-// cout << "Time t = "
-//      << duration_cast<milliseconds>(t2 - t1).count() << "[ms]" << endl;

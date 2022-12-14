@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# Finished: a1, a2, b1, b2, c
+# Done: a1, a2, b1, b2, c
+# Undone:
 clear
-g++ c_alt.cpp -o out && ./out < c.txt #> output.txt
+g++     c.cpp -o out
+./out < c.txt #> output.txt
 rm -f out
