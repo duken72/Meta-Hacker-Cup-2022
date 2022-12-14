@@ -133,9 +133,8 @@ length: 1   2   3
 
   $$\sum_{i = 1}^N \sum_{j = 1}^Q (a_i - x_j)^2 = \sum_{i = 1}^N \sum_{j = 1}^Q (a_i^2 - 2a_i x_j + x_j^2) = Q \sum_{i = 1}^N a_i^2 + N \sum_{j = 1}^Q x_j^2 - 2 \sum_{i = 1}^N a_i \sum_{j = 1}^Q x_j$$
 
-- The 4 values can be computed in $\mathcal{O}(N)$ as we read the input:
-
-  $$\sum_{i = 1}^N a_i^2,\; \sum_{j = 1}^Q x_j^2,\; \sum_{i = 1}^N a_i,\; \sum_{j = 1}^Q x_j$$  
+- The above 4 sums can be computed in $\mathcal{O}(N)$ as we read the input:
+  $$\sum_{i = 1}^N a_i^2, \sum_{j = 1}^Q x_j^2, \sum_{i = 1}^N a_i, \sum_{j = 1}^Q x_j$$  
 
 - Afterward, the result can be computed in $\mathcal{O}(1)$
 - Additionally, be careful with modulus arithmetic.
